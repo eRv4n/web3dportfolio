@@ -2,7 +2,6 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-// Post Processing
 
 let backgroundColor = 0xd4dafc;
 
@@ -100,6 +99,10 @@ controls.mouseButtons = {
 };
 controls.update();
 
+// Loading screen
+const loadingText = document.getElementById("loading-text");
+const loadingScreen = document.getElementById("loading-screen");
+
 // BLENDER OBJ
 
 const interactiveObjects = {
@@ -195,9 +198,20 @@ loader.load(
         }
       }
     });
+    gsap.to("#loading-screen", {
+      opacity: 0,
+      duration: 0.8,
+      onComplete: () => {
+        loadingScreen.remove();
+      },
+    });
     scene.add(bedroomObject);
   },
-  null,
+  (xhr) => {
+    const percent = (xhr.loaded / xhr.total) * 100;
+
+    loadingText.textContent = `Loading ${Math.round(percent)}%`;
+  },
   (error) => {
     console.error(error);
   },
